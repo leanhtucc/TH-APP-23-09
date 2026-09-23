@@ -1,97 +1,71 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Student Management App
 
-# Getting Started
+Ứng dụng quản lý sinh viên – Bài thực hành 01 môn Phát triển ứng dụng với React Native.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Mô tả
 
-## Step 1: Start Metro
+Ứng dụng React Native dựng giao diện Trang chủ quản lý sinh viên (Home Screen) với bố cục trực quan, tối ưu trải nghiệm người dùng, xử lý vùng an toàn hiển thị (Safe Area) cho camera cutout/notch và thanh điều hướng cử chỉ trên Android & iOS.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Công nghệ sử dụng
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **React Native CLI** (v0.87.0)
+- **TypeScript** (v6.0.3)
+- **React Navigation** (@react-navigation/native-stack)
+- **react-native-safe-area-context**
+- **StyleSheet & Flexbox Layout**
+
+## Chức năng giao diện
+
+- **Header sinh viên**: Lời chào, họ tên, MSSV, avatar fallback và nút thông báo có chấm đỏ kèm phản hồi xúc giác.
+- **Banner chào mừng**: Card thông điệp học tập sinh động.
+- **Khu vực thống kê**: 3 thẻ số liệu (Tổng số môn: 4, Số bài tập: 12, Đã hoàn thành: 1) tính toán động từ mock data.
+- **Ô tìm kiếm môn học**: Hỗ trợ tìm kiếm theo tên hoặc mô tả, hỗ trợ tiếng Việt không dấu, có nút xóa nhanh (Clear).
+- **Danh sách môn học**: Tối thiểu 4 môn học kèm icon, số bài học, số bài tập, thanh tiến độ (Progress Bar) và phần trăm hoàn thành.
+- **Trạng thái hoàn thành**: Tự động hiển thị badge "✓ Hoàn thành" và thanh tiến độ màu xanh lá khi đạt 100%.
+- **Empty State**: Hiển thị thông báo thân thiện khi không tìm thấy môn học nào khớp với từ khóa tìm kiếm.
+- **Bottom Navigation UI**: Thanh điều hướng 4 mục (Trang chủ, Môn học, Bài tập, Cá nhân) cố định ngoài ScrollView với hiệu ứng active indicator.
+
+## Hướng dẫn cài đặt & Khởi chạy
+
+### Cài đặt thư viện
 
 ```sh
-# Using npm
+npm install
+```
+
+### Chạy Metro Bundler
+
+```sh
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+### Khởi chạy trên Android
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+### Khởi chạy trên iOS
 
 ```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+npx pod-install
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Cấu trúc source chính
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+```text
+src/
+├── app/                  # Cấu hình Navigation chính (AppNavigator)
+├── components/student/   # Các UI Component quản lý sinh viên
+│   ├── BottomTabBar.tsx
+│   ├── SearchBar.tsx
+│   ├── StatCard.tsx
+│   ├── StudentHeader.tsx
+│   ├── SubjectCard.tsx
+│   ├── WelcomeBanner.tsx
+│   └── index.ts
+├── data/                 # Mock data & utility functions (studentData.ts)
+├── screens/home/         # Màn hình Trang chủ (HomeScreen)
+└── types/                # TypeScript interface & type definitions
+```

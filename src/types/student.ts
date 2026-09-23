@@ -1,6 +1,5 @@
-/**
- * Types cho hệ thống Quản lý sinh viên (Bài thực hành 01)
- */
+import type { ImageSourcePropType } from 'react-native';
+
 
 export type SubjectIcon = 'mobile' | 'database' | 'design' | 'network';
 
@@ -9,7 +8,7 @@ export interface Student {
   fullName: string;
   studentCode: string;
   greeting: string;
-  avatar?: string;
+  avatar?: ImageSourcePropType | string;
 }
 
 export interface Subject {

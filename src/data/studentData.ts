@@ -1,18 +1,13 @@
 import type { Student, Subject, StudentStatistics } from '../types/student';
 
-/**
- * Mock data cho sinh viên
- */
 export const mockStudent: Student = {
   id: '1',
-  fullName: 'Nguyễn Văn An',
+  fullName: 'Nguyễn Trường Giang',
   studentCode: 'B21DCCN001',
   greeting: 'Xin chào',
+  avatar: require('../../assets/avatar.png'),
 };
 
-/**
- * Mock data cho danh sách môn học
- */
 export const mockSubjects: Subject[] = [
   {
     id: 'sub-1',
@@ -22,7 +17,7 @@ export const mockSubjects: Subject[] = [
     completedLessons: 18,
     assignmentCount: 3,
     icon: 'mobile',
-    color: '#6366f1', // Tím xanh
+    color: '#6366f1',
   },
   {
     id: 'sub-2',
@@ -32,7 +27,7 @@ export const mockSubjects: Subject[] = [
     completedLessons: 18,
     assignmentCount: 4,
     icon: 'database',
-    color: '#10b981', // Xanh lá
+    color: '#10b981',
   },
   {
     id: 'sub-3',
@@ -42,7 +37,7 @@ export const mockSubjects: Subject[] = [
     completedLessons: 9,
     assignmentCount: 2,
     icon: 'design',
-    color: '#f97316', // Cam
+    color: '#f97316',
   },
   {
     id: 'sub-4',
@@ -52,13 +47,10 @@ export const mockSubjects: Subject[] = [
     completedLessons: 8,
     assignmentCount: 3,
     icon: 'network',
-    color: '#0068ff', // Xanh dương
+    color: '#0068ff',
   },
 ];
 
-/**
- * Tính phần trăm hoàn thành bài học an toàn (tránh chia cho 0)
- */
 export const calculateProgress = (completedLessons: number, totalLessons: number): number => {
   if (totalLessons <= 0) {
     return 0;
@@ -67,16 +59,19 @@ export const calculateProgress = (completedLessons: number, totalLessons: number
   return Math.min(100, Math.max(0, progress));
 };
 
-/**
- * Kiểm tra xem môn học đã hoàn thành hay chưa
- */
 export const isSubjectCompleted = (subject: Subject): boolean => {
   return subject.totalLessons > 0 && subject.completedLessons >= subject.totalLessons;
 };
 
-/**
- * Tính toán thống kê tổng quan của sinh viên từ danh sách môn học
- */
+export const normalizeVietnamese = (text: string): string => {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .trim();
+};
+
 export const getStudentStatistics = (subjects: Subject[]): StudentStatistics => {
   const totalSubjects = subjects.length;
   const totalAssignments = subjects.reduce((sum, item) => sum + item.assignmentCount, 0);
@@ -89,7 +84,4 @@ export const getStudentStatistics = (subjects: Subject[]): StudentStatistics => 
   };
 };
 
-/**
- * Dữ liệu thống kê mặc định tính từ mockSubjects
- */
 export const mockStatistics: StudentStatistics = getStudentStatistics(mockSubjects);

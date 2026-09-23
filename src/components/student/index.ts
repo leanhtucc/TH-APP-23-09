@@ -1,5 +1,10 @@
-/**
- * Thư mục chứa các component cho màn hình Student Home (dành cho Phase 2-5)
- * Ví dụ: StudentHeader, StatCard, SearchBar, SubjectCard, BottomTabBar
- */
-export {};
+export { StudentHeader } from './StudentHeader';
+export { WelcomeBanner } from './WelcomeBanner';
+export { StatCard, type StatCardProps } from './StatCard';
+export { SearchBar, type SearchBarProps } from './SearchBar';
+export { SubjectCard, type SubjectCardProps } from './SubjectCard';
+export {
+  BottomTabBar,
+  type BottomTabBarProps,
+  type TabKey,
+} from './BottomTabBar';
