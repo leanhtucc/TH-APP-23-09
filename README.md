@@ -67,11 +67,11 @@ Trong PowerShell, từ thư mục gốc dự án:
 
 ```powershell
 Set-Location .\android
-.\gradlew.bat assembleRelease
+.gradlew.bat assembleRelease
 Set-Location ..
 ```
 
-Lệnh trên đóng gói ABI ARM64 (đa số điện thoại hiện nay), ARM 32-bit và x86_64 (emulator). APK universal được tạo tại:
+Mặc định dự án đóng gói ABI ARM64 (đa số điện thoại hiện nay) và x86_64 (emulator). APK universal được tạo tại:
 
 ```text
 android\app\build\outputs\apk\release\app-release.apk
