@@ -1,17 +1,14 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   card: {
     backgroundColor: '#0068ff',
+    borderColor: 'rgba(255,255,255,0.18)',
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 20,
     paddingVertical: 18,
     paddingHorizontal: 20,
     alignItems: 'center',
-    shadowColor: '#0068ff',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
   },
   tenThanhPho: {
     fontSize: 20,
@@ -45,6 +42,12 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     color: '#bfdbfe',
     marginBottom: 16,
+  },
+  feelsLike: {
+    fontSize: 13,
+    color: '#dbeafe',
+    marginTop: -12,
+    marginBottom: 14,
   },
   detailsRow: {
     flexDirection: 'row',

@@ -6,8 +6,10 @@ import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import App from '../App';
 
-test('renders correctly', async () => {
+test('mounts the weather app', async () => {
+  let renderedApp: ReturnType<typeof ReactTestRenderer.create> | undefined;
   await ReactTestRenderer.act(() => {
-    ReactTestRenderer.create(<App />);
+    renderedApp = ReactTestRenderer.create(<App />);
   });
+  expect(renderedApp).toBeDefined();
 });

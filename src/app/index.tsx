@@ -2,22 +2,16 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { AuthProvider } from '../context/AuthContext';
 import HomeScreen from '../screens/home';
-import LoginScreen from '../screens/login';
-import RegisterScreen from '../screens/register';
-import LogoutScreen from '../screens/logout';
-import TH1 from '../screens/TH1';
-import Settings from '../screens/settings';
+import DetailScreen from '../screens/detail';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator: React.FC = () => {
   return (
-    <AuthProvider>
-      <NavigationContainer>
+    <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="TH1"
+          initialRouteName="Home"
           screenOptions={{
             headerStyle: {
               backgroundColor: '#0068ff',
@@ -34,48 +28,20 @@ export const AppNavigator: React.FC = () => {
           }}
         >
           <Stack.Screen
-            name="TH1"
-            component={TH1}
-            options={{
-              title: 'Hồ sơ',
-            }}
-          />
-          <Stack.Screen
-            name="settings"
-            component={Settings}
-            options={{
-              title: 'Hồ sơ',
-            }}
-          />
-          <Stack.Screen
             name="Home"
             component={HomeScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Login"
-            component={LoginScreen}
+            name="Detail"
+            component={DetailScreen}
             options={{
-              title: 'Đăng nhập',
-            }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{
-              title: 'Tạo tài khoản',
-            }}
-          />
-          <Stack.Screen
-            name="Logout"
-            component={LogoutScreen}
-            options={{
-              title: 'Cá nhân',
+              title: 'Chi tiết',
+              animation: 'slide_from_right',
             }}
           />
         </Stack.Navigator>
-      </NavigationContainer>
-    </AuthProvider>
+    </NavigationContainer>
   );
 };
 

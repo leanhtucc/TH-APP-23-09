@@ -1,97 +1,156 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Thời tiết
 
-# Getting Started
+Ứng dụng dự báo thời tiết đa màn hình xây bằng React Native CLI và TypeScript. Home hiển thị thời tiết hiện tại, dự báo theo giờ và theo ngày; Detail trình bày thông tin chi tiết của khung giờ hoặc ngày được chọn.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Tính năng
 
-## Step 1: Start Metro
+| Yêu cầu | Đáp ứng trong app |
+| --- | --- |
+| Vị trí hiện tại và quyền thiết bị | `useLocation`, màn quyền vị trí, mở Cài đặt/thử lại và tọa độ dự phòng Hà Nội |
+| Thời tiết hiện tại | Thẻ Home có nhiệt độ, cao/thấp, cảm nhận và các chỉ số thời tiết |
+| Dự báo theo giờ/ngày | Danh sách 24 giờ và 7 ngày; chọn một thẻ để mở Detail |
+| Chỉ số và phân loại | Thẻ độ ẩm, gió/la bàn, UV, áp suất, tầm nhìn và lượng mưa |
+| Giao diện ngày/đêm và trạng thái | Theme theo mã thời tiết/ngày đêm, loading/error/empty, làm mới |
+| Nhiều kích thước màn hình | Bố cục Home/Detail co giãn theo chiều rộng và hướng màn hình |
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- **Vị trí và quyền truy cập:** xin quyền vị trí khi chạy; hỗ trợ thử lại, mở Cài đặt khi quyền bị chặn và dùng Hà Nội làm vị trí dự phòng (`21.0285, 105.8542`).
+- **Thời tiết hiện tại:** nhiệt độ, cảm nhận, cao/thấp, độ ẩm, gió, UV, áp suất, tầm nhìn và lượng mưa.
+- **Dự báo:** 24 giờ và 7 ngày, có biểu đồ dải nhiệt độ và khả năng mưa.
+- **Chi tiết:** mở từ thẻ giờ/ngày; có các chỉ số, la bàn gió, thanh UV, thời gian bình minh/hoàng hôn.
+- **Giao diện theo thời tiết:** màu nền ngày/đêm, trạng thái loading/error/empty, làm mới bằng nút hoặc kéo xuống.
+- **Công cụ phát triển:** trong bản development, nhấn giữ tên thành phố 1,5 giây để chuyển lần lượt qua các theme xem trước. Công cụ được bảo vệ bằng `__DEV__` và không hoạt động trong release.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Công nghệ và dịch vụ
 
-```sh
-# Using npm
-npm start
+- React Native CLI 0.87, React 19 và TypeScript strict.
+- React Navigation native stack.
+- Open-Meteo Forecast API lấy dữ liệu thời tiết.
+- BigDataCloud reverse geocoding để suy ra tên thành phố từ tọa độ.
+- `@react-native-community/geolocation` lấy vị trí thiết bị.
+- Safe Area Context, Jest, React Native Testing Library và ESLint.
 
-# OR using Yarn
-yarn start
+## Yêu cầu môi trường
+
+- Node.js **22.11 trở lên** (theo `package.json`) và npm.
+- JDK 17.
+- Android Studio, Android SDK Platform 37, Build Tools 37.0.0 và NDK 27.1.12297006 (Gradle có thể cài các thành phần SDK còn thiếu nếu đã cấu hình SDK Manager).
+- Android Emulator hoặc thiết bị Android có bật USB debugging.
+- Emulator API 24 trở lên; target hiện tại là API 36.
+
+## Cài đặt và chạy Android
+
+Từ thư mục gốc dự án, cài dependencies:
+
+```powershell
+npm install
 ```
 
-## Step 2: Build and run your app
+Mở terminal thứ nhất và chạy Metro:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```powershell
+npx react-native start
 ```
 
-### iOS
+Mở terminal thứ hai để cài và chạy bản development:
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```powershell
+npx react-native run-android
 ```
 
-Then, and every time you update your native dependencies, run:
+### Cấp quyền và chọn vị trí emulator
 
-```sh
-bundle exec pod install
+Khi ứng dụng yêu cầu, chọn quyền vị trí khi dùng ứng dụng. Để đặt vị trí giả lập trong Android Studio Emulator, mở **Extended controls → Location**, nhập Hà Nội `21.0285, 105.8542`, rồi chọn **Set location**. Nếu không cấp quyền, có thể chọn vị trí mặc định Hà Nội trong app.
+
+## Build và chạy APK release
+
+Trong PowerShell, từ thư mục gốc dự án:
+
+```powershell
+Set-Location .\android
+.\gradlew.bat assembleRelease
+Set-Location ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+APK được tạo tại:
 
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+```text
+android\app\build\outputs\apk\release\app-release.apk
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Cài APK lên emulator/thiết bị đang kết nối:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```powershell
+adb install -r .\android\app\build\outputs\apk\release\app-release.apk
+```
 
-## Step 3: Modify your app
+Mở bản release đã cài:
 
-Now that you have successfully run the app, let's make changes!
+```powershell
+adb shell am start -n com.lostandfound/.MainActivity
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+Nếu Gradle bị kẹt hoặc daemon gặp lỗi, dừng các daemon từ thư mục `android`:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+```powershell
+.\gradlew.bat --stop
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+> Release hiện ký bằng `android/app/debug.keystore` với debug signing config mặc định của template. Cách ký này đủ để nộp bài/cài thử, nhưng không phù hợp phát hành lên store hoặc phân phối production. Công cụ đổi theme chỉ chạy trong development; release không kèm hành vi đó.
 
-## Congratulations! :tada:
+## Cấu trúc và luồng dữ liệu
 
-You've successfully run and modified your React Native App. :partying_face:
+```text
+src/
+├── api/          # Open-Meteo, BigDataCloud và mapper dữ liệu
+├── components/   # Thẻ thời tiết, trạng thái và chỉ số
+├── constants/    # Vị trí mặc định
+├── context/      # Theme thời tiết
+├── hooks/        # useLocation, useWeather và hiệu ứng giao diện
+├── screens/      # Home và Detail
+├── types/        # Kiểu dữ liệu weather và navigation
+└── utils/        # Format, theme, layout, chỉ số và trạng thái
+__tests__/        # Unit test và smoke test
+android/          # Cấu hình Android và Gradle
+ios/              # Cấu hình iOS
+docs/screenshots/ # Ảnh minh họa dự kiến
+```
 
-### Now what?
+Luồng vị trí và thời tiết: `useLocation` lấy tọa độ → `useWeather` gọi `getWeatherByCoords` → API đồng thời lấy forecast và reverse geocoding → mapper chuyển response thành `WeatherData` → Home/Detail render qua các component.
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Trạng thái và theme xem trước
 
-# Troubleshooting
+- **Loading:** xuất hiện khi xác định vị trí hoặc chờ API trả dữ liệu.
+- **Error:** có thể kiểm tra bằng cách tắt mạng trước khi tải/làm mới; giao diện cung cấp thao tác thử lại.
+- **Empty:** được hiển thị khi dữ liệu forecast thiếu danh sách giờ hoặc ngày. API thực tế thường trả đủ dữ liệu; có thể kiểm tra trạng thái này bằng fixture/mock trong test hoặc response rỗng trong môi trường development.
+- **Theme:** ở development, nhấn giữ tên thành phố 1,5 giây. Mỗi lần giữ sẽ chuyển theme và hiện nhãn theme đang xem.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Kiểm thử và chất lượng
 
-# Learn More
+```powershell
+npx jest
+npx tsc --noEmit
+npx eslint .
+```
 
-To learn more about React Native, take a look at the following resources:
+Jest cấu hình mock `@react-native-community/geolocation` trong `jest.setup.js` và chuyển đổi các package React Navigation qua `transformIgnorePatterns`.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Ảnh chụp màn hình và video
+
+Lưu ảnh vào `docs/screenshots/` với các tên dự kiến:
+
+- `home.png` — màn hình Home.
+- `hourly-detail.png` — chi tiết dự báo theo giờ.
+- `daily-detail.png` — chi tiết dự báo theo ngày.
+- `location-permission.png` — yêu cầu quyền vị trí.
+- `weather-themes.png` — các theme thời tiết/ngày đêm.
+
+### Video demo
+
+Liên kết video: *(bổ sung sau khi tải video lên)*.
+
+## Hạn chế và hướng phát triển
+
+- Cần kết nối Internet; hiện chưa có cache/offline forecast.
+- Tên thành phố phụ thuộc dịch vụ reverse geocoding; khi lỗi sẽ dùng tên dự phòng.
+- Release đang dùng debug keystore; trước khi phát hành cần tạo keystore riêng và cấu hình bí mật ký an toàn.
+- Có thể bổ sung cache, kiểm tra chất lượng không khí và thiết lập nhiều địa điểm trong các phiên bản sau.
