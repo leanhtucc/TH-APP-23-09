@@ -3,11 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { AuthProvider } from '../context/AuthContext';
-import StudentHomeScreen from '../screens/StudentHomeScreen';
 import HomeScreen from '../screens/home';
 import LoginScreen from '../screens/login';
 import RegisterScreen from '../screens/register';
 import LogoutScreen from '../screens/logout';
+import TH1 from '../screens/TH1';
+import Settings from '../screens/settings';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -16,7 +17,7 @@ export const AppNavigator: React.FC = () => {
     <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="StudentHome"
+          initialRouteName="TH1"
           screenOptions={{
             headerStyle: {
               backgroundColor: '#0068ff',
@@ -33,18 +34,23 @@ export const AppNavigator: React.FC = () => {
           }}
         >
           <Stack.Screen
-            name="StudentHome"
-            component={StudentHomeScreen}
+            name="TH1"
+            component={TH1}
             options={{
-              title: 'Quản lý sinh viên',
+              title: 'Hồ sơ',
+            }}
+          />
+          <Stack.Screen
+            name="settings"
+            component={Settings}
+            options={{
+              title: 'Hồ sơ',
             }}
           />
           <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{
-              title: 'Trang chủ',
-            }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Login"
