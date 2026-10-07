@@ -71,7 +71,7 @@ Set-Location .\android
 Set-Location ..
 ```
 
-APK được tạo tại:
+Lệnh trên đóng gói ABI ARM64 (đa số điện thoại hiện nay), ARM 32-bit và x86_64 (emulator). APK universal được tạo tại:
 
 ```text
 android\app\build\outputs\apk\release\app-release.apk
