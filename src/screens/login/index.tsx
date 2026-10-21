@@ -39,7 +39,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             {
                 text: 'Bắt đầu',
                 onPress: () => {
-                    navigation.replace('Logout');
+                    navigation.replace('Main');
                 },
             },
         ]);
