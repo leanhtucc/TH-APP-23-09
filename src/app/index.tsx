@@ -1,69 +1,75 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { AuthProvider } from '../context/AuthContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { ChatProvider } from '../context/ChatContext';
 
 import LoginScreen from '../screens/login';
 import RegisterScreen from '../screens/register';
 import ChatScreen from '../screens/chat';
 import MainTabNavigator from '../navigation/MainTabNavigator';
 
-// Các màn hình cũ vẫn giữ để không mất code
-import TH1 from '../screens/TH1';
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const AppNavigator: React.FC = () => {
+const RootNavigator: React.FC = () => {
+  const { user, ready } = useAuth();
+  const { isDark, colors } = useTheme();
+
+  // Chờ đọc xong phiên đăng nhập đã lưu để chọn đúng màn hình đầu tiên
+  if (!ready) {
+    return null;
+  }
+
+  const base = isDark ? DarkTheme : DefaultTheme;
+
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Login"
-          screenOptions={{
-            headerStyle: { backgroundColor: '#0068ff' },
-            headerTintColor: '#ffffff',
-            headerTitleAlign: 'center',
-            headerTitleStyle: { fontWeight: 'bold', fontSize: 18 },
-            contentStyle: { backgroundColor: '#f4f5f7' },
-          }}
-        >
-          {/* Auth screens */}
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ title: 'Đăng nhập', headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{ title: 'Tạo tài khoản' }}
-          />
-
-          {/* Main app — Bottom Tabs */}
-          <Stack.Screen
-            name="Main"
-            component={MainTabNavigator}
-            options={{ headerShown: false }}
-          />
-
-          {/* Chat screen nằm ngoài tab để có header riêng */}
-          <Stack.Screen
-            name="Chat"
-            component={ChatScreen}
-            options={{ title: 'Chat' }}
-          />
-
-          {/* Màn hình cũ giữ lại */}
-          <Stack.Screen
-            name="TH1"
-            component={TH1}
-            options={{ title: 'Hồ sơ' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthProvider>
+    <NavigationContainer
+      theme={{
+        ...base,
+        colors: {
+          ...base.colors,
+          primary: colors.primary,
+          background: colors.background,
+          card: colors.surface,
+          text: colors.textPrimary,
+          border: colors.border,
+        },
+      }}
+    >
+      <Stack.Navigator
+        initialRouteName={user ? 'Main' : 'Login'}
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen name="Main" component={MainTabNavigator} />
+        <Stack.Screen
+          name="Chat"
+          component={ChatScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
+
+export const AppNavigator: React.FC = () => (
+  <ThemeProvider>
+    <AuthProvider>
+      <ChatProvider>
+        <RootNavigator />
+      </ChatProvider>
+    </AuthProvider>
+  </ThemeProvider>
+);
 
 export default AppNavigator;

@@ -1,319 +1,262 @@
 import React, { useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { LoginScreenProps } from '../../types/navigation';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LoginProps } from './types';
+import { createStyles } from './styles';
 import { useAuth } from '../../context/AuthContext';
+import { useThemedStyles } from '../../context/ThemeContext';
+import { Icon } from '../../components/Icon';
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
-    const { login } = useAuth();
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
+  const { styles, colors: Colors } = useThemedStyles(createStyles);
+  const { login } = useAuth();
+  const insets = useSafeAreaInsets();
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [focused, setFocused] = useState<'phone' | 'password' | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-    const canSubmit = phoneNumber.trim().length > 0 && password.length > 0;
+  const canSubmit = phoneNumber.trim().length > 0 && password.length > 0 && !loading;
 
-    const handleLogin = () => {
-        const trimmedPhone = phoneNumber.trim();
-        if (!trimmedPhone) {
-            Alert.alert('Thông báo', 'Vui lòng nhập số điện thoại hoặc email');
-            return;
-        }
+  const validate = (): boolean => {
+    let isValid = true;
+    const trimmed = phoneNumber.trim();
 
-        if (!password) {
-            Alert.alert('Thông báo', 'Vui lòng nhập mật khẩu');
-            return;
-        }
+    if (!trimmed) {
+      setPhoneError('Vui lòng nhập số điện thoại');
+      isValid = false;
+    } else if (trimmed.length < 9) {
+      setPhoneError('Số điện thoại không hợp lệ (tối thiểu 9 số)');
+      isValid = false;
+    } else {
+      setPhoneError(null);
+    }
 
-        login(trimmedPhone);
-        Alert.alert('Thành công', 'Đăng nhập Zalo thành công!', [
-            {
-                text: 'Bắt đầu',
-                onPress: () => {
-                    navigation.replace('Main');
-                },
-            },
-        ]);
-    };
+    if (!password) {
+      setPasswordError('Vui lòng nhập mật khẩu');
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Mật khẩu tối thiểu 6 ký tự');
+      isValid = false;
+    } else {
+      setPasswordError(null);
+    }
 
-    return (
-        <SafeAreaView style={styles.safeArea}>
-            <KeyboardAvoidingView
-                style={styles.keyboardView}
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            >
-                <View style={styles.bannerContainer}>
-                    <Text style={styles.bannerText}>
-                        Vui lòng nhập số điện thoại và mật khẩu để đăng nhập
-                    </Text>
+    return isValid;
+  };
+
+  const handleLogin = () => {
+    if (!validate()) return;
+
+    setLoading(true);
+    setTimeout(() => {
+      login(phoneNumber.trim());
+      setLoading(false);
+      navigation.replace('Main');
+    }, 400);
+  };
+
+  return (
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Hero */}
+          <View style={[styles.hero, { paddingTop: insets.top + 36 }]}>
+            <View style={styles.circleLarge} />
+            <View style={styles.circleSmall} />
+            <View style={styles.logo}>
+              <Icon name="messages" size={36} color={Colors.primary} strokeWidth={2.2} />
+            </View>
+            <Text style={styles.appName}>Zalo Chat</Text>
+            <Text style={styles.tagline}>Kết nối mọi người, mọi lúc mọi nơi</Text>
+          </View>
+
+          {/* Form card */}
+          <View style={[styles.sheet, { paddingBottom: insets.bottom + 24 }]}>
+            <Text style={styles.welcome}>Chào mừng trở lại</Text>
+            <Text style={styles.welcomeSub}>
+              Đăng nhập bằng số điện thoại và mật khẩu của bạn
+            </Text>
+
+            {/* Input Phone */}
+            <View style={styles.inputGroup}>
+              <View
+                style={[
+                  styles.inputRow,
+                  focused === 'phone' && styles.inputRowFocused,
+                  !!phoneError && styles.inputRowError,
+                ]}
+              >
+                <TouchableOpacity
+                  style={styles.countryCodeButton}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel="Chọn mã vùng"
+                >
+                  <View style={styles.countryCodeBadge}>
+                    <Text style={styles.countryCodeBadgeText}>VN</Text>
+                  </View>
+                  <Text style={styles.countryCodeText}>+84</Text>
+                  <Icon name="chevronDown" size={16} color={Colors.textSecondary} />
+                </TouchableOpacity>
+
+                <View style={styles.verticalDivider} />
+
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Số điện thoại"
+                  placeholderTextColor={Colors.textMuted}
+                  value={phoneNumber}
+                  onChangeText={(val) => {
+                    setPhoneNumber(val);
+                    if (phoneError) setPhoneError(null);
+                  }}
+                  keyboardType="phone-pad"
+                  autoCapitalize="none"
+                  onFocus={() => setFocused('phone')}
+                  onBlur={() => setFocused(null)}
+                />
+
+                {phoneNumber.length > 0 && (
+                  <TouchableOpacity
+                    style={styles.clearButton}
+                    onPress={() => setPhoneNumber('')}
+                    accessibilityRole="button"
+                    accessibilityLabel="Xóa số điện thoại"
+                  >
+                    <Icon name="clear" size={14} color={Colors.textSecondary} strokeWidth={2.4} />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {!!phoneError && (
+                <View style={styles.errorRow}>
+                  <Icon name="alert" size={13} color={Colors.danger} />
+                  <Text style={styles.errorText}>{phoneError}</Text>
+                </View>
+              )}
+            </View>
+
+            {/* Input Password */}
+            <View style={styles.inputGroup}>
+              <View
+                style={[
+                  styles.inputRow,
+                  focused === 'password' && styles.inputRowFocused,
+                  !!passwordError && styles.inputRowError,
+                ]}
+              >
+                <View style={styles.inputIconLeft}>
+                  <Icon
+                    name="lock"
+                    size={18}
+                    color={focused === 'password' ? Colors.primary : Colors.textMuted}
+                    strokeWidth={2}
+                  />
                 </View>
 
-                <ScrollView
-                    contentContainerStyle={styles.contentContainer}
-                    keyboardShouldPersistTaps="handled"
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Mật khẩu"
+                  placeholderTextColor={Colors.textMuted}
+                  value={password}
+                  onChangeText={(val) => {
+                    setPassword(val);
+                    if (passwordError) setPasswordError(null);
+                  }}
+                  secureTextEntry={!showPassword}
+                  onFocus={() => setFocused('password')}
+                  onBlur={() => setFocused(null)}
+                />
+
+                <TouchableOpacity
+                  style={styles.showHideButton}
+                  onPress={() => setShowPassword(!showPassword)}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                 >
-                    <View style={styles.formSection}>
-                        <View style={styles.inputRow}>
-                            <TouchableOpacity
-                                style={styles.countryCodeButton}
-                                activeOpacity={0.7}
-                                onPress={() => Alert.alert('Mã quốc gia', 'Việt Nam (+84)')}
-                            >
-                                <Text style={styles.countryCodeText}>+84</Text>
-                                <Text style={styles.countryCodeArrow}>▾</Text>
-                            </TouchableOpacity>
+                  <Icon
+                    name={showPassword ? 'eyeOff' : 'eye'}
+                    size={20}
+                    color={Colors.textSecondary}
+                    strokeWidth={2}
+                  />
+                </TouchableOpacity>
+              </View>
 
-                            <View style={styles.verticalDivider} />
+              {!!passwordError && (
+                <View style={styles.errorRow}>
+                  <Icon name="alert" size={13} color={Colors.danger} />
+                  <Text style={styles.errorText}>{passwordError}</Text>
+                </View>
+              )}
+            </View>
 
-                            <TextInput
-                                style={styles.inputField}
-                                placeholder="Số điện thoại"
-                                placeholderTextColor="#999"
-                                value={phoneNumber}
-                                onChangeText={setPhoneNumber}
-                                keyboardType="phone-pad"
-                                autoCapitalize="none"
-                            />
+            {/* Forgot password */}
+            <TouchableOpacity
+              style={styles.forgotPasswordContainer}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+            </TouchableOpacity>
 
-                            {phoneNumber.length > 0 && (
-                                <TouchableOpacity
-                                    style={styles.clearButton}
-                                    onPress={() => setPhoneNumber('')}
-                                >
-                                    <Text style={styles.clearButtonText}>✕</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
+            {/* Submit button */}
+            <TouchableOpacity
+              style={[
+                styles.loginButton,
+                canSubmit ? styles.loginButtonActive : styles.loginButtonDisabled,
+              ]}
+              onPress={handleLogin}
+              disabled={!canSubmit}
+              activeOpacity={0.8}
+            >
+              {loading ? (
+                <ActivityIndicator color={Colors.white} size="small" />
+              ) : (
+                <>
+                  <Text style={styles.loginButtonText}>Đăng nhập</Text>
+                  <Icon name="arrowRight" size={18} color={Colors.white} strokeWidth={2.4} />
+                </>
+              )}
+            </TouchableOpacity>
 
-                        <View style={styles.inputRow}>
-                            <TextInput
-                                style={styles.inputField}
-                                placeholder="Mật khẩu"
-                                placeholderTextColor="#999"
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry={!showPassword}
-                            />
-                            <TouchableOpacity
-                                style={styles.showHideButton}
-                                onPress={() => setShowPassword(!showPassword)}
-                            >
-                                <Text style={styles.showHideText}>
-                                    {showPassword ? 'ẨN' : 'HIỆN'}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <TouchableOpacity
-                            style={styles.forgotPasswordContainer}
-                            onPress={() =>
-                                Alert.alert(
-                                    'Lấy lại mật khẩu',
-                                    'Vui lòng liên hệ quản trị viên hoặc sử dụng số điện thoại đăng ký.'
-                                )
-                            }
-                        >
-                            <Text style={styles.forgotPasswordText}>Lấy lại mật khẩu</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[
-                                styles.loginButton,
-                                canSubmit ? styles.loginButtonActive : styles.loginButtonDisabled,
-                            ]}
-                            onPress={handleLogin}
-                            disabled={!canSubmit}
-                            activeOpacity={0.8}
-                        >
-                            <Text
-                                style={[
-                                    styles.loginButtonText,
-                                    canSubmit ? styles.loginButtonTextActive : styles.loginButtonTextDisabled,
-                                ]}
-                            >
-                                Đăng nhập
-                            </Text>
-                        </TouchableOpacity>
-
-                        <View style={styles.registerPromptContainer}>
-                            <Text style={styles.registerPromptText}>Chưa có tài khoản? </Text>
-                            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                                <Text style={styles.registerLinkText}>Đăng ký ngay</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
-    );
+            {/* Footer */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Chưa có tài khoản? </Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate('Register')}
+                accessibilityRole="button"
+              >
+                <Text style={styles.registerLink}>Đăng ký ngay</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
+  );
 };
-
-const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    keyboardView: {
-        flex: 1,
-    },
-    bannerContainer: {
-        backgroundColor: '#f4f5f7',
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e5e7eb',
-    },
-    bannerText: {
-        fontSize: 13,
-        color: '#4b5563',
-        lineHeight: 18,
-    },
-    contentContainer: {
-        flexGrow: 1,
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 24,
-        justifyContent: 'space-between',
-    },
-    formSection: {
-        width: '100%',
-    },
-    inputRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1.5,
-        borderBottomColor: '#0068ff',
-        paddingVertical: 8,
-        marginBottom: 20,
-    },
-    countryCodeButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingRight: 8,
-    },
-    countryCodeText: {
-        fontSize: 16,
-        color: '#111827',
-        fontWeight: '600',
-    },
-    countryCodeArrow: {
-        fontSize: 12,
-        color: '#6b7280',
-        marginLeft: 4,
-    },
-    verticalDivider: {
-        width: 1,
-        height: 20,
-        backgroundColor: '#d1d5db',
-        marginRight: 10,
-    },
-    inputField: {
-        flex: 1,
-        height: 40,
-        fontSize: 16,
-        color: '#111827',
-        paddingVertical: 0,
-        paddingHorizontal: 4,
-    },
-    clearButton: {
-        padding: 6,
-        borderRadius: 12,
-        backgroundColor: '#e5e7eb',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 22,
-        height: 22,
-    },
-    clearButtonText: {
-        fontSize: 10,
-        color: '#6b7280',
-        fontWeight: 'bold',
-    },
-    showHideButton: {
-        paddingVertical: 4,
-        paddingHorizontal: 8,
-    },
-    showHideText: {
-        fontSize: 12,
-        color: '#6b7280',
-        fontWeight: '700',
-    },
-    forgotPasswordContainer: {
-        alignSelf: 'flex-start',
-        marginBottom: 28,
-    },
-    forgotPasswordText: {
-        color: '#0068ff',
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    loginButton: {
-        height: 48,
-        borderRadius: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    loginButtonActive: {
-        backgroundColor: '#0068ff',
-        shadowColor: '#0068ff',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.25,
-        shadowRadius: 5,
-        elevation: 3,
-    },
-    loginButtonDisabled: {
-        backgroundColor: '#c7dcfc',
-    },
-    loginButtonText: {
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    loginButtonTextActive: {
-        color: '#ffffff',
-    },
-    loginButtonTextDisabled: {
-        color: '#ffffff',
-    },
-    registerPromptContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    registerPromptText: {
-        fontSize: 14,
-        color: '#4b5563',
-    },
-    registerLinkText: {
-        fontSize: 14,
-        color: '#0068ff',
-        fontWeight: '700',
-    },
-    footerSection: {
-        alignItems: 'center',
-        gap: 8,
-        marginTop: 40,
-        paddingVertical: 12,
-    },
-    faqLink: {
-        fontSize: 13,
-        color: '#6b7280',
-        textDecorationLine: 'underline',
-    },
-    languageText: {
-        fontSize: 12,
-        color: '#9ca3af',
-    },
-});
 
 export default LoginScreen;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AppNavigator from './src/app';
+import { AppNavigator } from './src/app';
 
 function App(): React.JSX.Element {
   return (

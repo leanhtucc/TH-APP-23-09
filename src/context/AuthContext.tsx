@@ -1,4 +1,13 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ReactNode,
+} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface UserProfile {
   name: string;
@@ -7,40 +16,61 @@ export interface UserProfile {
 
 interface AuthContextType {
   user: UserProfile | null;
+  /** true khi đã đọc xong phiên đăng nhập đã lưu */
+  ready: boolean;
   login: (phoneOrEmail: string, name?: string) => void;
   register: (name: string, phoneOrEmail: string) => void;
   logout: () => void;
 }
 
+const STORAGE_KEY = 'auth_user';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUserState] = useState<UserProfile | null>(null);
+  const [ready, setReady] = useState(false);
 
-  const login = (phoneOrEmail: string, name?: string) => {
-    const derivedName = name || (phoneOrEmail.includes('@') ? phoneOrEmail.split('@')[0] : phoneOrEmail);
-    setUser({
-      name: derivedName,
-      phoneOrEmail,
-    });
-  };
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((raw) => {
+        if (raw) setUserState(JSON.parse(raw) as UserProfile);
+      })
+      .catch(() => {})
+      .finally(() => setReady(true));
+  }, []);
 
-  const register = (name: string, phoneOrEmail: string) => {
-    setUser({
-      name,
-      phoneOrEmail,
-    });
-  };
+  const setUser = useCallback((next: UserProfile | null) => {
+    setUserState(next);
+    if (next) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+    } else {
+      AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+    }
+  }, []);
 
-  const logout = () => {
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
-      {children}
-    </AuthContext.Provider>
+  const login = useCallback(
+    (phoneOrEmail: string, name?: string) => {
+      const derivedName =
+        name || (phoneOrEmail.includes('@') ? phoneOrEmail.split('@')[0] : phoneOrEmail);
+      setUser({ name: derivedName, phoneOrEmail });
+    },
+    [setUser]
   );
+
+  const register = useCallback(
+    (name: string, phoneOrEmail: string) => setUser({ name, phoneOrEmail }),
+    [setUser]
+  );
+
+  const logout = useCallback(() => setUser(null), [setUser]);
+
+  const value = useMemo(
+    () => ({ user, ready, login, register, logout }),
+    [user, ready, login, register, logout]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextType => {

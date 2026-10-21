@@ -11,7 +11,7 @@ export const currentUser = {
 
 export type Conversation = {
   id: string;
-  user: { id: string; name: string; avatar: string };
+  user: { id: string; name: string; avatar: string; online?: boolean };
   lastMessage: string;
   time: string;
   unread: number;
@@ -20,35 +20,35 @@ export type Conversation = {
 export const conversations: Conversation[] = [
   {
     id: '1',
-    user: { id: '2', name: 'Trần Thị B', avatar: 'https://i.pravatar.cc/150?img=5' },
+    user: { id: '2', name: 'Trần Thị B', avatar: 'https://i.pravatar.cc/150?img=5', online: true },
     lastMessage: 'Oke bạn nhé, hẹn gặp lại!',
     time: '10:30',
     unread: 2,
   },
   {
     id: '2',
-    user: { id: '3', name: 'Lê Văn C', avatar: 'https://i.pravatar.cc/150?img=8' },
+    user: { id: '3', name: 'Lê Văn C', avatar: 'https://i.pravatar.cc/150?img=8', online: false },
     lastMessage: 'Bạn đã xem tài liệu chưa?',
     time: '09:15',
     unread: 0,
   },
   {
     id: '3',
-    user: { id: '4', name: 'Phạm Thị D', avatar: 'https://i.pravatar.cc/150?img=9' },
+    user: { id: '4', name: 'Phạm Thị D', avatar: 'https://i.pravatar.cc/150?img=9', online: true },
     lastMessage: 'Hôm nay học môn gì vậy?',
     time: 'Hôm qua',
     unread: 5,
   },
   {
     id: '4',
-    user: { id: '5', name: 'Hoàng Minh E', avatar: 'https://i.pravatar.cc/150?img=12' },
+    user: { id: '5', name: 'Hoàng Minh E', avatar: 'https://i.pravatar.cc/150?img=12', online: false },
     lastMessage: 'Ok rồi, cảm ơn bạn!',
     time: 'Hôm qua',
     unread: 0,
   },
   {
     id: '5',
-    user: { id: '6', name: 'Ngô Thị F', avatar: 'https://i.pravatar.cc/150?img=20' },
+    user: { id: '6', name: 'Ngô Thị F', avatar: 'https://i.pravatar.cc/150?img=20', online: true },
     lastMessage: 'Nhớ nộp bài trước 5h nhé',
     time: 'T2',
     unread: 1,
