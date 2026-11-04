@@ -2,40 +2,40 @@
 
 export const lightColors = {
   // Brand
-  primary: '#0068ff',
-  primaryDark: '#0050cc',
-  primaryDeep: '#003d99',
-  primaryLight: '#e8f1ff',
-  primarySoft: '#f2f7ff',
-  primaryMid: '#93c5fd',
+  primary: '#2F5BFF',
+  primaryDark: '#2349D6',
+  primaryDeep: '#1D3FBF',
+  primaryLight: '#E7EDFF',
+  primarySoft: '#F2F5FF',
+  primaryMid: '#9DB4FF',
 
   // Status
-  danger: '#ef4444',
-  dangerLight: '#fee2e2',
-  success: '#22c55e',
-  successDark: '#16a34a',
-  successLight: '#dcfce7',
+  danger: '#D92D20',
+  dangerLight: '#FEF3F2',
+  success: '#12B76A',
+  successDark: '#05603A',
+  successLight: '#DCFAE6',
   warning: '#f59e0b',
 
   // Surfaces
   white: '#ffffff',
-  background: '#f3f5f9',
-  backgroundAlt: '#f8fafc',
+  background: '#F3F5FB',
+  backgroundAlt: '#F8FAFC',
   surface: '#ffffff',
-  inputBg: '#f3f5f9',
+  inputBg: '#F3F5FB',
 
   // Text
-  textPrimary: '#0f172a',
-  textSecondary: '#475569',
-  textMuted: '#94a3b8',
+  textPrimary: '#101828',
+  textSecondary: '#5B6478',
+  textMuted: '#8A93A6',
   textDisabled: '#cbd5e1',
-  disabled: '#cbd5e1',
+  disabled: '#C5CCD8',
   textOnPrimary: '#ffffff',
   textOnPrimaryMuted: 'rgba(255,255,255,0.75)',
 
   // Border
-  border: '#e2e8f0',
-  borderLight: '#f1f5f9',
+  border: '#E4E8F1',
+  borderLight: '#EEF0F5',
 
   // Misc
   overlay: 'rgba(0,0,0,0.04)',
@@ -73,6 +73,11 @@ export const darkColors: ThemeColors = {
 
 /** Bảng màu mặc định (light) — dùng cho code ngoài React tree. */
 export const Colors = lightColors;
+
+/** Font toàn app (Android: đăng ký trong MainApplication.kt, độ đậm theo fontWeight). */
+export const FontFamily = {
+  regular: 'Plus Jakarta Sans',
+};
 
 export const FontSize = {
   xs: 11,

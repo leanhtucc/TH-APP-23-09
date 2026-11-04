@@ -2,25 +2,19 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   Switch,
   ScrollView,
   Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../types/navigation';
+import { Text } from '../../components/Typography';
 import { useAuth } from '../../context/AuthContext';
-import { currentUser } from '../../data/mockData';
 import { useTheme, useThemedStyles } from '../../context/ThemeContext';
 import Avatar from '../../components/Avatar';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { Icon, IconBadge } from '../../components/Icon';
 import { SettingSwitchRowProps, InfoRowProps, NavRowProps } from './types';
 import { createStyles } from './styles';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const SettingSwitchRow: React.FC<SettingSwitchRowProps> = ({
   icon,
@@ -110,14 +104,13 @@ const NavRow: React.FC<NavRowProps> = ({
 export const SettingsScreen: React.FC = () => {
   const { styles, colors: Colors } = useThemedStyles(createStyles);
   const { isDark, setDarkMode } = useTheme();
-  const navigation = useNavigation<NavigationProp>();
   const { user, logout } = useAuth();
 
   const [isNotifEnabled, setIsNotifEnabled] = useState(true);
   const [isActiveStatus, setIsActiveStatus] = useState(true);
 
-  const displayName = user?.name || currentUser.name;
-  const displayContact = user?.phoneOrEmail || currentUser.phone;
+  const displayName = user?.name ?? '';
+  const displayContact = user?.email ?? '';
 
   const handleLogout = () => {
     Alert.alert(
@@ -128,9 +121,9 @@ export const SettingsScreen: React.FC = () => {
         {
           text: 'Đăng xuất',
           style: 'destructive',
+          // Sau signOut, user = null → navigator tự quay về màn Đăng nhập
           onPress: () => {
-            logout();
-            navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+            logout().catch(() => Alert.alert('Lỗi', 'Không thể đăng xuất. Vui lòng thử lại'));
           },
         },
       ]
@@ -144,7 +137,6 @@ export const SettingsScreen: React.FC = () => {
         <ScreenHeader title="Cài đặt" subtitle="Quản lý tài khoản & tùy chọn">
           <View style={styles.profileCard}>
             <Avatar
-              uri={currentUser.avatar}
               name={displayName}
               size={64}
               showOnlineDot
@@ -183,10 +175,10 @@ export const SettingsScreen: React.FC = () => {
             value={displayName}
           />
           <InfoRow
-            icon="phone"
+            icon="mail"
             iconBgColor="#f0fdf4"
             iconColor="#16a34a"
-            label="Số điện thoại"
+            label="Email"
             value={displayContact}
           />
           <InfoRow
@@ -194,7 +186,7 @@ export const SettingsScreen: React.FC = () => {
             iconBgColor="#fef3c7"
             iconColor="#d97706"
             label="ID người dùng"
-            value="#20261014"
+            value={`#${(user?.uid ?? '').slice(0, 8)}`}
           />
         </View>
 

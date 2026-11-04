@@ -1,23 +1,23 @@
-// src/components/CardChat/styles.ts
+// src/components/CardChat/styles.ts — thẻ hội thoại theo design
 import { StyleSheet } from 'react-native';
-import { ThemeColors, FontSize, FontWeight, Radius, Shadow, Spacing } from '../../theme';
+import { ThemeColors, FontSize, FontWeight, Shadow } from '../../theme';
 
 export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: Spacing.md,
+    padding: 12,
     alignItems: 'center',
     backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.sm,
+    borderRadius: 20,
+    marginHorizontal: 20,
+    marginBottom: 10,
     ...Shadow.sm,
   },
   containerUnread: {
-    backgroundColor: Colors.primarySoft,
+    backgroundColor: Colors.surface,
   },
   avatarArea: {
-    marginRight: Spacing.md,
+    marginRight: 12,
   },
   infoArea: {
     flex: 1,
@@ -27,56 +27,57 @@ export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   name: {
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.semibold,
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.bold,
     color: Colors.textPrimary,
     flex: 1,
-    marginRight: Spacing.sm,
+    marginRight: 8,
   },
   nameUnread: {
     fontWeight: FontWeight.bold,
   },
   time: {
     fontSize: FontSize.sm,
-    color: Colors.textMuted,
+    fontWeight: FontWeight.medium,
+    color: Colors.textSecondary,
   },
   timeUnread: {
     color: Colors.primary,
-    fontWeight: FontWeight.semibold,
+    fontWeight: FontWeight.bold,
   },
   bottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   checkIcon: {
-    marginRight: 4,
+    display: 'none',
   },
   lastMsg: {
     flex: 1,
-    fontSize: FontSize.md,
-    color: Colors.textMuted,
-    lineHeight: 20,
+    fontSize: 13,
+    color: Colors.textSecondary,
+    lineHeight: 19,
   },
   lastMsgUnread: {
     color: Colors.textPrimary,
-    fontWeight: FontWeight.medium,
+    fontWeight: FontWeight.semibold,
   },
   unreadPill: {
     backgroundColor: Colors.primary,
-    borderRadius: Radius.full,
+    borderRadius: 11,
     minWidth: 22,
     height: 22,
-    paddingHorizontal: 6,
-    marginLeft: Spacing.sm,
+    paddingHorizontal: 7,
+    marginLeft: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
   unreadPillText: {
     color: Colors.white,
-    fontSize: FontSize.xs,
+    fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
   },
 });

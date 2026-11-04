@@ -1,29 +1,58 @@
-// src/components/CardContact/styles.ts
+// src/components/CardContact/styles.ts — thẻ danh bạ + nhãn Online/Offline theo design
 import { StyleSheet } from 'react-native';
-import { ThemeColors, FontSize, FontWeight, Radius, Shadow, Spacing } from '../../theme';
+import { ThemeColors, FontSize, FontWeight, Shadow } from '../../theme';
 
 export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: Spacing.md,
+    padding: 12,
     alignItems: 'center',
     backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.sm,
+    borderRadius: 20,
+    marginHorizontal: 20,
+    marginBottom: 10,
     ...Shadow.sm,
   },
   avatarArea: {
-    marginRight: 14,
+    marginRight: 12,
   },
   infoArea: {
     flex: 1,
   },
   name: {
-    fontSize: FontSize.lg,
-    fontWeight: FontWeight.semibold,
+    fontSize: FontSize.base,
+    fontWeight: FontWeight.bold,
     color: Colors.textPrimary,
-    marginBottom: 3,
+  },
+  statusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 5,
+    paddingLeft: 8,
+    paddingRight: 10,
+    borderRadius: 20,
+  },
+  statusPillOn: {
+    backgroundColor: Colors.successLight,
+  },
+  statusPillOff: {
+    backgroundColor: Colors.borderLight,
+  },
+  statusDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+  },
+  statusText: {
+    fontSize: FontSize.sm,
+    fontWeight: FontWeight.bold,
+  },
+  statusTextOn: {
+    color: Colors.successDark,
+  },
+  statusTextOff: {
+    color: Colors.textSecondary,
   },
   statusOnline: {
     fontSize: FontSize.sm,
@@ -42,7 +71,7 @@ export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
   actionButton: {
     width: 38,
     height: 38,
-    borderRadius: Radius.full,
+    borderRadius: 19,
     backgroundColor: Colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,6 +1,6 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/navigation';
-import { Contact } from '../../data/mockData';
+import { Contact } from '../../types/chat';
 
 export type ContactsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

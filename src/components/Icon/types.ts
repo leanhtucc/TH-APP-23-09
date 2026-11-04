@@ -38,7 +38,9 @@ export type IconName =
   | 'globe'
   | 'info'
   | 'pin'
-  | 'trash';
+  | 'trash'
+  | 'mail'
+  | 'mapPin';
 
 export interface IconProps {
   name: IconName;

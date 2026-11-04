@@ -1,34 +1,18 @@
-// src/components/ScreenHeader/styles.ts
+// src/components/ScreenHeader/styles.ts — header sáng theo design (tiêu đề đậm, nền trang)
 import { StyleSheet } from 'react-native';
-import { ThemeColors, FontSize, FontWeight, Radius, Spacing } from '../../theme';
+import { ThemeColors, FontSize, FontWeight, Spacing } from '../../theme';
 
 export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
   container: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.lg,
-    borderBottomLeftRadius: Radius.xl,
-    borderBottomRightRadius: Radius.xl,
-    overflow: 'hidden',
+    backgroundColor: Colors.background,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.sm,
   },
   circleLarge: {
-    position: 'absolute',
-    top: -60,
-    right: -40,
-    width: 170,
-    height: 170,
-    borderRadius: 85,
-    backgroundColor: Colors.glass,
+    display: 'none',
   },
   circleSmall: {
-    position: 'absolute',
-    bottom: -30,
-    left: -20,
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    display: 'none',
   },
   row: {
     flexDirection: 'row',
@@ -39,15 +23,14 @@ export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: FontSize.xxxl,
-    fontWeight: FontWeight.heavy,
-    color: Colors.textOnPrimary,
-    letterSpacing: 0.3,
+    fontSize: 26,
+    fontWeight: FontWeight.bold,
+    color: Colors.textPrimary,
   },
   subtitle: {
-    fontSize: FontSize.sm,
-    color: Colors.textOnPrimaryMuted,
+    fontSize: FontSize.md - 1,
+    color: Colors.textSecondary,
     fontWeight: FontWeight.medium,
-    marginTop: 2,
+    marginTop: 4,
   },
 });

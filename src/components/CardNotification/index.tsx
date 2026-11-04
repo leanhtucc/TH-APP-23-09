@@ -1,6 +1,10 @@
 // src/components/CardNotification/index.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+} from 'react-native';
+import { Text } from '../Typography';
 import { CardNotificationProps } from './types';
 import { createStyles } from './styles';
 import { Icon } from '../Icon';

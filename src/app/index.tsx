@@ -39,24 +39,31 @@ const RootNavigator: React.FC = () => {
       }}
     >
       <Stack.Navigator
-        initialRouteName={user ? 'Main' : 'Login'}
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen
-          name="Register"
-          component={RegisterScreen}
-          options={{ animation: 'slide_from_right' }}
-        />
-        <Stack.Screen name="Main" component={MainTabNavigator} />
-        <Stack.Screen
-          name="Chat"
-          component={ChatScreen}
-          options={{ animation: 'slide_from_right' }}
-        />
+        {user ? (
+          // Đã đăng nhập: đăng xuất → user = null → tự quay về Login
+          <>
+            <Stack.Screen name="Main" component={MainTabNavigator} />
+            <Stack.Screen
+              name="Chat"
+              component={ChatScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ animation: 'slide_from_right' }}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

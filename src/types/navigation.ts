@@ -1,12 +1,12 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { Conversation } from '../data/mockData';
+import type { Peer } from './chat';
 
-// Stack gốc: Login/Register → Main (tabs); Chat nằm ngoài tab
+// Chưa đăng nhập: Login/Register — đã đăng nhập: Main (tabs) + Chat
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Main: undefined; // Bottom Tab container
-  Chat: { conversation: Conversation };
+  Chat: { peer: Peer };
 };
 
 // Tab navigator param list

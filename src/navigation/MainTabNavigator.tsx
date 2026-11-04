@@ -1,10 +1,17 @@
-import React, { useCallback } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Keyboard,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from 'react-native';
+import { Text } from '../components/Typography';
+import { BottomTabBarProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainTabParamList } from '../types/navigation';
-import { conversations, notifications } from '../data/mockData';
-import { Colors, FontSize, FontWeight, Radius, Shadow } from '../theme';
+import { useChat } from '../context/ChatContext';
+import { useTheme } from '../context/ThemeContext';
+import { ThemeColors, FontSize, FontWeight } from '../theme';
 import { Icon } from '../components/Icon';
 import { IconName } from '../components/Icon/types';
 
@@ -15,152 +22,163 @@ import SettingsScreen from '../screens/settings';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-interface TabIconProps {
-  name: IconName;
-  focused: boolean;
-  badge?: number;
-}
+const TAB_META: Record<keyof MainTabParamList, { icon: IconName; label: string }> = {
+  HomeTab: { icon: 'messages', label: 'Tin nhắn' },
+  ContactsTab: { icon: 'contacts', label: 'Danh bạ' },
+  NotificationsTab: { icon: 'notifications', label: 'Thông báo' },
+  SettingsTab: { icon: 'settings', label: 'Cài đặt' },
+};
 
-const TabIcon: React.FC<TabIconProps> = ({ name, focused, badge }) => (
-  <View style={[styles.pill, focused && styles.pillActive]} pointerEvents="none">
-    <Icon
-      name={name}
-      size={22}
-      color={focused ? Colors.primary : Colors.textMuted}
-      strokeWidth={focused ? 2.4 : 1.8}
-    />
-    {badge !== undefined && badge > 0 ? (
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>{badge > 9 ? '9+' : badge}</Text>
-      </View>
-    ) : null}
-  </View>
-);
-
-export const MainTabNavigator: React.FC = () => {
+// Thanh tab nổi theo design: tab đang chọn là viên thuốc xanh có chữ
+const FloatingTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
   const insets = useSafeAreaInsets();
-  const unreadMessages = conversations.reduce((sum, c) => sum + c.unread, 0);
-  const unreadNotifs = notifications.filter((n) => !n.read).length;
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { totalUnread, unreadNotifications } = useChat();
+  const [keyboardShown, setKeyboardShown] = useState(false);
 
-  const renderHomeIcon = useCallback(
-    ({ focused }: { focused: boolean }) => (
-      <TabIcon name="messages" focused={focused} badge={unreadMessages} />
-    ),
-    [unreadMessages]
-  );
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardShown(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardShown(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
-  const renderContactsIcon = useCallback(
-    ({ focused }: { focused: boolean }) => (
-      <TabIcon name="contacts" focused={focused} />
-    ),
-    []
-  );
+  if (keyboardShown) return null;
 
-  const renderNotifsIcon = useCallback(
-    ({ focused }: { focused: boolean }) => (
-      <TabIcon name="notifications" focused={focused} badge={unreadNotifs} />
-    ),
-    [unreadNotifs]
-  );
-
-  const renderSettingsIcon = useCallback(
-    ({ focused }: { focused: boolean }) => (
-      <TabIcon name="settings" focused={focused} />
-    ),
-    []
-  );
+  const badgeFor = (name: string) =>
+    name === 'HomeTab' ? totalUnread : name === 'NotificationsTab' ? unreadNotifications : 0;
 
   return (
-    <Tab.Navigator
-      initialRouteName="HomeTab"
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
-        tabBarHideOnKeyboard: true,
-        tabBarStyle: {
-          backgroundColor: Colors.white,
-          borderTopWidth: 1,
-          borderTopColor: Colors.borderLight,
-          height: 64 + insets.bottom,
-          paddingTop: 8,
-          paddingBottom: Math.max(insets.bottom, 8),
-          ...Shadow.md,
-        },
-        tabBarLabelStyle: {
-          fontSize: FontSize.xs,
-          fontWeight: FontWeight.semibold,
-          marginTop: 2,
-        },
-      }}
-    >
-      <Tab.Screen
-        name="HomeTab"
-        component={HomeScreen}
-        options={{
-          title: 'Tin nhắn',
-          tabBarIcon: renderHomeIcon,
-        }}
-      />
-      <Tab.Screen
-        name="ContactsTab"
-        component={ContactsScreen}
-        options={{
-          title: 'Danh bạ',
-          tabBarIcon: renderContactsIcon,
-        }}
-      />
-      <Tab.Screen
-        name="NotificationsTab"
-        component={NotificationsScreen}
-        options={{
-          title: 'Thông báo',
-          tabBarIcon: renderNotifsIcon,
-        }}
-      />
-      <Tab.Screen
-        name="SettingsTab"
-        component={SettingsScreen}
-        options={{
-          title: 'Cài đặt',
-          tabBarIcon: renderSettingsIcon,
-        }}
-      />
-    </Tab.Navigator>
+    <View style={[styles.bar, { bottom: Math.max(insets.bottom, 12) + 4 }]}>
+      {state.routes.map((route, index) => {
+        const focused = state.index === index;
+        const meta = TAB_META[route.name as keyof MainTabParamList];
+        const badge = badgeFor(route.name);
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
+          if (!focused && !event.defaultPrevented) {
+            navigation.navigate(route.name as never);
+          }
+        };
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            style={[styles.item, focused ? styles.itemActive : styles.itemIdle]}
+            onPress={onPress}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={meta.label}
+            accessibilityState={{ selected: focused }}
+          >
+            <Icon
+              name={meta.icon}
+              size={22}
+              color={focused ? colors.white : colors.textSecondary}
+              strokeWidth={2.2}
+            />
+            {focused && (
+              <Text style={styles.label} numberOfLines={1}>
+                {meta.label}
+              </Text>
+            )}
+            {badge > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{badge > 9 ? '9+' : badge}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  pill: {
-    width: 48,
-    height: 30,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  pillActive: {
-    backgroundColor: Colors.primaryLight,
-  },
-  badge: {
-    position: 'absolute',
-    top: -3,
-    right: 2,
-    minWidth: 18,
-    height: 18,
-    paddingHorizontal: 4,
-    borderRadius: Radius.full,
-    backgroundColor: Colors.danger,
-    borderWidth: 1.5,
-    borderColor: Colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: {
-    color: Colors.white,
-    fontSize: 10,
-    fontWeight: FontWeight.bold,
-  },
-});
+const renderTabBar = (props: BottomTabBarProps) => <FloatingTabBar {...props} />;
+
+export const MainTabNavigator: React.FC = () => (
+  <Tab.Navigator
+    initialRouteName="HomeTab"
+    tabBar={renderTabBar}
+    screenOptions={{ headerShown: false }}
+  >
+    <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: 'Tin nhắn' }} />
+    <Tab.Screen name="ContactsTab" component={ContactsScreen} options={{ title: 'Danh bạ' }} />
+    <Tab.Screen
+      name="NotificationsTab"
+      component={NotificationsScreen}
+      options={{ title: 'Thông báo' }}
+    />
+    <Tab.Screen name="SettingsTab" component={SettingsScreen} options={{ title: 'Cài đặt' }} />
+  </Tab.Navigator>
+);
+
+const createStyles = (Colors: ThemeColors) =>
+  StyleSheet.create({
+    bar: {
+      position: 'absolute',
+      left: 16,
+      right: 16,
+      height: 68,
+      borderRadius: 28,
+      backgroundColor: Colors.surface,
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+      gap: 4,
+      elevation: 12,
+      shadowColor: '#101828',
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.16,
+      shadowRadius: 24,
+    },
+    item: {
+      height: 48,
+      borderRadius: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+    },
+    itemActive: {
+      flex: 2.2,
+      backgroundColor: Colors.primary,
+    },
+    itemIdle: {
+      flex: 1,
+    },
+    label: {
+      color: Colors.white,
+      fontSize: 13,
+      fontWeight: FontWeight.bold,
+    },
+    badge: {
+      position: 'absolute',
+      top: 2,
+      right: 6,
+      minWidth: 18,
+      height: 18,
+      paddingHorizontal: 4,
+      borderRadius: 9,
+      backgroundColor: Colors.danger,
+      borderWidth: 1.5,
+      borderColor: Colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    badgeText: {
+      color: Colors.white,
+      fontSize: FontSize.xs - 1,
+      fontWeight: FontWeight.bold,
+    },
+  });
 
 export default MainTabNavigator;

@@ -1,6 +1,11 @@
 // src/screens/notifications/index.tsx
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
+import { Text } from '../../components/Typography';
 import { NotificationsScreenProps } from './types';
 import { createStyles } from './styles';
 import { useChat } from '../../context/ChatContext';

@@ -37,6 +37,8 @@ import {
   Info,
   Pin,
   Trash2,
+  Mail,
+  MapPin,
   LucideIcon,
 } from 'lucide-react-native';
 import { IconName } from './types';
@@ -80,4 +82,6 @@ export const iconMap: Record<IconName, LucideIcon> = {
   info: Info,
   pin: Pin,
   trash: Trash2,
+  mail: Mail,
+  mapPin: MapPin,
 };

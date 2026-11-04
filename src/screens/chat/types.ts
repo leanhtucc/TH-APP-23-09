@@ -1,5 +1,5 @@
 import { ChatScreenProps as BaseChatScreenProps } from '../../types/navigation';
-import { ChatMessage } from '../../data/mockData';
+import { ChatMessage } from '../../types/chat';
 
 export type ChatScreenProps = BaseChatScreenProps;
 

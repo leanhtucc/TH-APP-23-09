@@ -1,5 +1,5 @@
 // src/components/CardContact/types.ts
-import { Contact } from '../../data/mockData';
+import { Contact } from '../../types/chat';
 
 export interface CardContactProps {
   contact: Contact;

@@ -28,6 +28,6 @@ export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
   },
   listContent: {
     paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xl,
+    paddingBottom: 120,
   },
 });

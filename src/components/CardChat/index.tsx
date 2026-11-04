@@ -1,6 +1,10 @@
 // src/components/CardChat/index.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+} from 'react-native';
+import { Text } from '../Typography';
 import { CardChatProps } from './types';
 import { createStyles } from './styles';
 import Avatar from '../Avatar';

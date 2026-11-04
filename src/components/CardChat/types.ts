@@ -1,5 +1,5 @@
 // src/components/CardChat/types.ts
-import { Conversation } from '../../data/mockData';
+import { Conversation } from '../../types/chat';
 
 export interface CardChatProps {
   conversation: Conversation;

@@ -7,15 +7,13 @@ export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
     backgroundColor: Colors.background,
   },
   listContent: {
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xl,
+    paddingTop: Spacing.sm,
+    paddingBottom: 120,
   },
   groupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.xs,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
   groupDot: {
     width: 8,
@@ -24,11 +22,11 @@ export const createStyles = (Colors: ThemeColors) => StyleSheet.create({
     marginRight: 6,
   },
   groupHeaderText: {
-    fontSize: FontSize.xs + 1,
+    fontSize: FontSize.sm,
     fontWeight: FontWeight.bold,
     color: Colors.textSecondary,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   groupBadge: {
     marginLeft: 6,

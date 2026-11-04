@@ -5,51 +5,49 @@ import {
   Platform,
   ScrollView,
   StatusBar,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Text, TextInput } from '../../components/Typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoginProps } from './types';
 import { createStyles } from './styles';
 import { useAuth } from '../../context/AuthContext';
 import { useThemedStyles } from '../../context/ThemeContext';
 import { Icon } from '../../components/Icon';
+import { isValidEmail } from '../../utils/validation';
 
 export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
   const { styles, colors: Colors } = useThemedStyles(createStyles);
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [focused, setFocused] = useState<'phone' | 'password' | null>(null);
-  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [focused, setFocused] = useState<'email' | 'password' | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = phoneNumber.trim().length > 0 && password.length > 0 && !loading;
+  const canSubmit = email.trim().length > 0 && password.length > 0 && !loading;
 
   const validate = (): boolean => {
     let isValid = true;
-    const trimmed = phoneNumber.trim();
+    const trimmed = email.trim();
 
     if (!trimmed) {
-      setPhoneError('Vui lòng nhập số điện thoại');
+      setEmailError('Vui lòng nhập email');
       isValid = false;
-    } else if (trimmed.length < 9) {
-      setPhoneError('Số điện thoại không hợp lệ (tối thiểu 9 số)');
+    } else if (!isValidEmail(trimmed)) {
+      setEmailError('Email không hợp lệ');
       isValid = false;
     } else {
-      setPhoneError(null);
+      setEmailError(null);
     }
 
     if (!password) {
       setPasswordError('Vui lòng nhập mật khẩu');
-      isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError('Mật khẩu tối thiểu 6 ký tự');
       isValid = false;
     } else {
       setPasswordError(null);
@@ -58,15 +56,18 @@ export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
     return isValid;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    setFormError(null);
     if (!validate()) return;
 
     setLoading(true);
-    setTimeout(() => {
-      login(phoneNumber.trim());
+    try {
+      await login(email.trim(), password);
+      // Thành công: AuthContext cập nhật user → navigator tự chuyển sang Main
+    } catch (e) {
+      setFormError((e as Error).message);
       setLoading(false);
-      navigation.replace('Main');
-    }, 400);
+    }
   };
 
   return (
@@ -82,84 +83,80 @@ export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
         >
           {/* Hero */}
-          <View style={[styles.hero, { paddingTop: insets.top + 36 }]}>
+          <View style={[styles.hero, { paddingTop: insets.top + 28 }]}>
             <View style={styles.circleLarge} />
             <View style={styles.circleSmall} />
-            <View style={styles.logo}>
-              <Icon name="messages" size={36} color={Colors.primary} strokeWidth={2.2} />
+            <View style={styles.brandRow}>
+              <View style={styles.logo}>
+                <Icon name="messages" size={28} color={Colors.primary} strokeWidth={2.2} />
+              </View>
+              <Text style={styles.appName}>Trò chuyện</Text>
             </View>
-            <Text style={styles.appName}>Zalo Chat</Text>
-            <Text style={styles.tagline}>Kết nối mọi người, mọi lúc mọi nơi</Text>
+            <Text style={styles.heroTitle}>{'Chào mừng\ntrở lại'}</Text>
+            <Text style={styles.tagline}>Đăng nhập để nhắn tin cùng bạn bè.</Text>
           </View>
 
-          {/* Form card */}
-          <View style={[styles.sheet, { paddingBottom: insets.bottom + 24 }]}>
-            <Text style={styles.welcome}>Chào mừng trở lại</Text>
-            <Text style={styles.welcomeSub}>
-              Đăng nhập bằng số điện thoại và mật khẩu của bạn
-            </Text>
-
-            {/* Input Phone */}
+          {/* Form card nổi */}
+          <View style={styles.sheet}>
+            {/* Input Email */}
             <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
               <View
                 style={[
                   styles.inputRow,
-                  focused === 'phone' && styles.inputRowFocused,
-                  !!phoneError && styles.inputRowError,
+                  focused === 'email' && styles.inputRowFocused,
+                  !!emailError && styles.inputRowError,
                 ]}
               >
-                <TouchableOpacity
-                  style={styles.countryCodeButton}
-                  activeOpacity={0.7}
-                  accessibilityRole="button"
-                  accessibilityLabel="Chọn mã vùng"
-                >
-                  <View style={styles.countryCodeBadge}>
-                    <Text style={styles.countryCodeBadgeText}>VN</Text>
-                  </View>
-                  <Text style={styles.countryCodeText}>+84</Text>
-                  <Icon name="chevronDown" size={16} color={Colors.textSecondary} />
-                </TouchableOpacity>
-
-                <View style={styles.verticalDivider} />
+                <View style={styles.inputIconLeft}>
+                  <Icon
+                    name="mail"
+                    size={18}
+                    color={focused === 'email' ? Colors.primary : Colors.textMuted}
+                    strokeWidth={2}
+                  />
+                </View>
 
                 <TextInput
                   style={styles.inputField}
-                  placeholder="Số điện thoại"
+                  placeholder="name@email.com"
                   placeholderTextColor={Colors.textMuted}
-                  value={phoneNumber}
+                  value={email}
                   onChangeText={(val) => {
-                    setPhoneNumber(val);
-                    if (phoneError) setPhoneError(null);
+                    setEmail(val);
+                    if (emailError) setEmailError(null);
+                    if (formError) setFormError(null);
                   }}
-                  keyboardType="phone-pad"
+                  keyboardType="email-address"
                   autoCapitalize="none"
-                  onFocus={() => setFocused('phone')}
+                  autoCorrect={false}
+                  onFocus={() => setFocused('email')}
                   onBlur={() => setFocused(null)}
                 />
 
-                {phoneNumber.length > 0 && (
+                {email.length > 0 && (
                   <TouchableOpacity
                     style={styles.clearButton}
-                    onPress={() => setPhoneNumber('')}
+                    onPress={() => setEmail('')}
                     accessibilityRole="button"
-                    accessibilityLabel="Xóa số điện thoại"
+                    accessibilityLabel="Xóa email"
                   >
                     <Icon name="clear" size={14} color={Colors.textSecondary} strokeWidth={2.4} />
                   </TouchableOpacity>
                 )}
               </View>
 
-              {!!phoneError && (
+              {!!emailError && (
                 <View style={styles.errorRow}>
                   <Icon name="alert" size={13} color={Colors.danger} />
-                  <Text style={styles.errorText}>{phoneError}</Text>
+                  <Text style={styles.errorText}>{emailError}</Text>
                 </View>
               )}
             </View>
 
             {/* Input Password */}
             <View style={styles.inputGroup}>
+              <Text style={styles.label}>Mật khẩu</Text>
               <View
                 style={[
                   styles.inputRow,
@@ -178,14 +175,16 @@ export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
 
                 <TextInput
                   style={styles.inputField}
-                  placeholder="Mật khẩu"
+                  placeholder="Nhập mật khẩu"
                   placeholderTextColor={Colors.textMuted}
                   value={password}
                   onChangeText={(val) => {
                     setPassword(val);
                     if (passwordError) setPasswordError(null);
+                    if (formError) setFormError(null);
                   }}
                   secureTextEntry={!showPassword}
+                  autoCapitalize="none"
                   onFocus={() => setFocused('password')}
                   onBlur={() => setFocused(null)}
                 />
@@ -213,13 +212,13 @@ export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
               )}
             </View>
 
-            {/* Forgot password */}
-            <TouchableOpacity
-              style={styles.forgotPasswordContainer}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
-            </TouchableOpacity>
+            {/* Lỗi từ Firebase: sai tài khoản / mật khẩu, mất mạng... */}
+            {!!formError && (
+              <View style={[styles.errorRow, styles.formError]} accessibilityRole="alert">
+                <Icon name="alert" size={14} color={Colors.danger} />
+                <Text style={styles.errorText}>{formError}</Text>
+              </View>
+            )}
 
             {/* Submit button */}
             <TouchableOpacity
@@ -234,24 +233,21 @@ export const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
               {loading ? (
                 <ActivityIndicator color={Colors.white} size="small" />
               ) : (
-                <>
-                  <Text style={styles.loginButtonText}>Đăng nhập</Text>
-                  <Icon name="arrowRight" size={18} color={Colors.white} strokeWidth={2.4} />
-                </>
+                <Text style={styles.loginButtonText}>Đăng nhập</Text>
               )}
             </TouchableOpacity>
+          </View>
 
-            {/* Footer */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Chưa có tài khoản? </Text>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => navigation.navigate('Register')}
-                accessibilityRole="button"
-              >
-                <Text style={styles.registerLink}>Đăng ký ngay</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Footer */}
+          <View style={[styles.footer, { paddingBottom: insets.bottom + 24 }]}>
+            <Text style={styles.footerText}>Chưa có tài khoản? </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('Register')}
+              accessibilityRole="button"
+            >
+              <Text style={styles.registerLink}>Đăng ký ngay</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
